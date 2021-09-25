@@ -1,0 +1,40 @@
+#!/usr/bin/python python3
+# coding=utf-8
+'''
+Author: whalefall
+Date: 2021-09-25 00:28:13
+LastEditTime: 2021-09-25 00:49:33
+Description: Flask 项目配置文件
+'''
+import os
+import platform
+
+basedir = os.path.abspath(os.path.dirname(__file__))  # 项目的绝对目录
+
+
+class Config(object):
+    '''主配置类'''
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'lovehyy123456hjl'  # 密钥
+    SQLALCHEMY_TRACK_MODIFICATIONS = False  # 数据库
+
+    @staticmethod
+    def init_app(app):
+        '''静态方法,用于其他组件初始化'''
+        pass
+
+
+class DevelopmentConfig(Config):
+    """开发环境,继承于Config主配置"""
+    DEBUG = True
+    # 判断操作系统
+    if platform.system() == "Windows":
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db', 'data.db')
+    else:
+        SQLALCHEMY_DATABASE_URI = 'sqlite:////' + os.path.join(basedir, 'db', 'data.db')
+
+
+
+# 开发环境选择字典
+config = {
+    "DevelopmentConfig": DevelopmentConfig
+}
