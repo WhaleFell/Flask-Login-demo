@@ -160,14 +160,16 @@
                                                     <!-- 登录按钮 -->
                                                     {{ form.submit(class="btn btn-info btn-sm",type="submit") }}
                                                     <!-- 取消按钮 -->
-                                                    <button src="/static/picture/index_button_qx.png" type="image"
-                                                            width="62" height="27"
+                                                    <button width="62" height="27" type="button"
                                                             onclick="window.location.href='{{ url_for('main.index') }}'"
                                                             class="btn btn-info btn-sm">
                                                         返回
                                                     </button>
-                                                    <button type="button" class="btn btn-info btn-sm" onclick="window.location.href='{{ url_for('auth.reg') }}'">注册</button>
-                                                    <br />
+                                                    <button type="button" class="btn btn-info btn-sm"
+                                                            onclick="window.location.href='{{ url_for('auth.reg') }}'">
+                                                        注册
+                                                    </button>
+                                                    <br/>
                                                     {{ form.remember_me.label }}{{ form.remember_me() }}
                                                 </td>
                                             </tr>
