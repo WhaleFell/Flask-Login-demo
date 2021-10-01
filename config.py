@@ -33,8 +33,17 @@ class DevelopmentConfig(Config):
         SQLALCHEMY_DATABASE_URI = 'sqlite:////' + os.path.join(basedir, 'db', 'data.db')
 
 
+class TencentConfig(Config):
+    DEBUG = True
+    # 判断操作系统
+    if platform.system() == "Windows":
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join('/tmp/', 'data.db')
+    else:
+        SQLALCHEMY_DATABASE_URI = 'sqlite:////' + os.path.join('/tmp/', 'data.db')
+
 
 # 开发环境选择字典
 config = {
-    "DevelopmentConfig": DevelopmentConfig
+    "DevelopmentConfig": DevelopmentConfig,
+    "TencentConfig": TencentConfig
 }

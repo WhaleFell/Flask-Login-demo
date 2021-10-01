@@ -1,0 +1,4 @@
+#!/bin/bash
+export FLASK_APP=app.py
+pip3 install -t . -r requirements.txt
+/var/lang/python3/bin/python3 app.py
