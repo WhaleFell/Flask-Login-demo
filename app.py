@@ -12,8 +12,10 @@ from flask_migrate import Migrate
 app = create_app('DevelopmentConfig')
 migrate = Migrate(app, db)
 
-
 # @app.shell_context_processors
 # def make_shell_context():
 #     """shell上下文"""
 #     return dict(db=db, User=User)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port='9000')
