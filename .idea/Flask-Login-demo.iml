@@ -11,6 +11,7 @@
       <list>
         <option value="$MODULE_DIR$/app/templates" />
         <option value="$MODULE_DIR$/app/templates/auth" />
+        <option value="$MODULE_DIR$/app/templates/msg" />
       </list>
     </option>
   </component>

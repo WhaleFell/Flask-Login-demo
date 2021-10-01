@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <!-- 跳转屏蔽,手机端自适应 -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer"/>
+    <link rel="shortcut icon" href="/static/image/favicon_blue32.ico">
+    <meta name="GUI" content="[morningstar],[招考组]">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    {#    引入js之后立即设置已更换cdn加速#}
+    {{ moment.include_moment(local_js="/static/js/moment-with-locales.min.js") }}
+    {{ moment.locale('zh-cn') }}
+    <script src="/static/js/Markdown.Converter.min.js"></script>
+    <script src="/static/js/Markdown.Sanitizer.min.js"></script>
+</head>
+<body>
+{% block body %}
+{% endblock %}
+</body>
+<script>
+    {% block script %}
+    {% endblock %}
+</script>
+<style>
+    {% block css %}
+
+    {% endblock %}
+</style>

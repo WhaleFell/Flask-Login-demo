@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}落落留言板{% endblock %}
+{% import '_macros.html' as macros %}
+{% block body %}
+    {{ super() }}
+    <div class="bg"></div>
+    <div class="container">
+        <p class="text-center"
+           style="font-size: 50px;color: #3A7734;background-color: #9C1A1C">
+            落落留言板
+        </p>
+
+
+        {% if current_user.is_authenticated %}
+            <div class="alert alert-success">
+                <strong>当前已登录!</strong>
+                <p>
+                    {{ current_user.username }}
+                    {{ current_user.email }}
+                </p>
+                <button type="button" class="btn btn-info btn-xs"
+                        onclick="window.location.href='{{ url_for('auth.logout',next=url_for('msg.msg_index')) }}'">退出登录
+                </button>
+                <button type="button" class="btn btn-info btn-xs"
+                        onclick="window.location.href='{{ url_for('auth.login',next=url_for('msg.msg_index')) }}'">
+                    登录其他账号
+                </button>
+            </div>
+        {% else %}
+            <div class="alert alert-warning">
+                <strong>警告!</strong>
+                当前未登录,只能以游客的身份写说说.<br/>
+                <span class="text-primary">已有账号?</span>
+                <button type="button" class="btn btn-info btn-xs"
+                        onclick="window.location.href='{{ url_for('auth.login',next=url_for('msg.msg_index')) }}'">去登录
+                </button>
+                <span class="text-primary">没有账号?</span>
+                <button type="button" class="btn btn-info btn-xs"
+                        onclick="window.location.href='{{ url_for('auth.reg',next=url_for('msg.msg_index')) }}'">去注册
+                </button>
+            </div>
+        {% endif %}
+
+        <div class="alert alert-info alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-hidden="true">
+                &times;
+            </button>
+            <h4 class="text-center text-primary center-block">本留言板支持markdown语法!</h4>
+            1. 何为 Markdown 语法: Markdown 是一种富文本编辑语言,可以像word一样排版,详细可参考<a
+                href="https://www.runoob.com/markdown/md-tutorial.html" class="text-primary" style="font-size: 20px;"
+                target="_blank">Markdown教程<span
+                class="glyphicon glyphicon-share"></span></a><br/>
+            2. 常用 Markdown 语法:<br/>
+            多级标题 <code>#,##,###,####</code><br/>
+            代码段 <code>`print()`</code><br/>
+            超链接 <code>[链接名称](链接地址)</code><br/>
+            图片 <code>![alt 属性文本](图片地址)</code><br/>
+            <button type="button" class="btn btn-primary btn-xs"
+                    onclick="window.location.href='{{ url_for('main.index') }}'">退回主页面
+            </button>
+        </div>
+
+        <form method="post">
+            {{ form.hidden_tag() }}
+            {{ form.body.label(class="text-danger") }}
+            {{ form.body(class='form-control',style="width: 100%;height: 120px",rows="2",cols="20") }}
+            <br/>
+            {{ form.submit(class="btn btn-info") }}
+        </form>
+        <br/>
+        {% for msg in msgs %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        {{ msg.author.username }}-{{ moment(msg.timestamp).format('LLL') }}
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    {{ msg.body_html|safe }}
+                </div>
+            </div>
+        {% endfor %}
+        {{ macros.pagination_widget(pagination, 'msg.msg_index') }}
+
+    </div>
+
+
+{% endblock %}
+<style>
+    {% block css %}
+        {#        自适应背景#}
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            background: url(/static/image/bg.jpeg) no-repeat center 0px;
+            background-size: cover;
+
+
+            background-position: center 0;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            -webkit-background-size: cover;
+            -o-background-size: cover;
+            -moz-background-size: cover;
+            -ms-background-size: cover;
+        }
+        .container {
+            opacity: 0.7;
+        }
+        .flask-pagedown-preview {
+            opacity: 1;
+            background-color: #7e8fad;
+        }
+    {% endblock %}
+</style>

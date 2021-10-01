@@ -9,11 +9,15 @@ Description: Flask 应用初始化(工厂函数)
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_pagedown import PageDown
+from flask_moment import Moment
 from config import config
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'  # 登录的端点
+pagedown = PageDown()
+moment = Moment()
 
 
 def create_app(config_name):
@@ -25,6 +29,8 @@ def create_app(config_name):
     # 注册组件
     db.init_app(app)
     login_manager.init_app(app)
+    pagedown.init_app(app)
+    moment.init_app(app)
 
     # 注册蓝图
     from .auth import auth
@@ -32,5 +38,8 @@ def create_app(config_name):
 
     from .main import main
     app.register_blueprint(main)
+
+    from .msg import msg
+    app.register_blueprint(msg)
 
     return app

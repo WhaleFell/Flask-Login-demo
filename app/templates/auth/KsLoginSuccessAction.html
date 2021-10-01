@@ -9,6 +9,10 @@
 
 <head>
     <title>2021年佛山市中考信息管理系统</title>
+    <!-- 跳转屏蔽,手机端自适应 -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon"
           href="../static/image/favicon_blue32.ico">
     <script src="../static/js/chrome.js"
@@ -111,8 +115,9 @@
             <font style='font-size:20px;' onclick="pop();">考生修改密码</font>
         </a></li>
         <li class="chromestyleRightdiv"> <span id="userinfoDIV">
-                    <font style='font-size:14px;'>当前用户:{{ current_user.username }}<a onclick="document.location.href='{{ url_for('auth.logout') }}'"
-                                                                                     style="cursor:pointer;">[退出]</a>
+                    <font style='font-size:14px;'>当前用户:{{ current_user.username }}<a
+                            onclick="document.location.href='{{ url_for('auth.logout') }}'"
+                            style="cursor:pointer;">[退出]</a>
                     </font>
                 </span></li>
     </ul>

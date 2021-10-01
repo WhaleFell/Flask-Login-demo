@@ -1,0 +1,44 @@
+{% macro pagination_widget(pagination, endpoint) %}
+    {#    分页宏,传入分页对象和分页所在的蓝图
+这个宏创建了一个 Bootstrap 分页元素，即一个有特殊样式的无序列表，其中定义了下述页
+面链接
+#}
+    <ul class="pagination">
+        <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
+            {#            判断是否有上一页#}
+            <a href="{% if pagination.has_prev %}{{ url_for(endpoint,
+ page = pagination.page - 1, **kwargs) }}{% else %}#{% endif %}">
+                &laquo;
+            </a>
+        </li>
+
+        {% for p in pagination.iter_pages() %}
+            {#            一个迭代器，返回一个在分页导航中显示的页数列表#}
+            {% if p %}
+                {% if p == pagination.page %}
+                    {#                    如果p是当前页数就高亮#}
+                    <li class="active">
+                        <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+                    </li>
+                {% else %}
+                    {#                    否则就做页面跳转#}
+                    <li>
+                        <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+                    </li>
+                {% endif %}
+            {% else %}
+                {#                如果p不存在#}
+                <li class="disabled"><a href="#">&hellip;</a></li>
+            {% endif %}
+
+        {% endfor %}
+
+        <li{% if not pagination.has_next %} class="disabled"{% endif %}>
+            {#            判断是否有下一页#}
+            <a href="{% if pagination.has_next %}{{ url_for(endpoint,
+ page = pagination.page + 1, **kwargs) }}{% else %}#{% endif %}">
+                &raquo;
+            </a>
+        </li>
+    </ul>
+{% endmacro %}
