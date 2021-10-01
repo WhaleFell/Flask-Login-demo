@@ -1,11 +1,11 @@
 #!/usr/bin/python python3
 # coding=utf-8
-'''
+"""
 Author: whalefall
 Date: 2021-09-25 00:28:13
 LastEditTime: 2021-09-25 00:49:33
 Description: Flask 项目配置文件
-'''
+"""
 import os
 import platform
 
@@ -13,13 +13,13 @@ basedir = os.path.abspath(os.path.dirname(__file__))  # 项目的绝对目录
 
 
 class Config(object):
-    '''主配置类'''
+    """主配置类"""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'lovehyy123456hjl'  # 密钥
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # 数据库
 
     @staticmethod
     def init_app(app):
-        '''静态方法,用于其他组件初始化'''
+        """静态方法,用于其他组件初始化"""
         pass
 
 
