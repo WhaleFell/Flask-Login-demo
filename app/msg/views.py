@@ -18,22 +18,17 @@ def msg_index():
         author = current_user._get_current_object()
     else:
         # 针对未登录的用户,即游客.
-        looker_id = session.get('looker_id')
+        looker_name = session.get('looker_name')
         ip = request.remote_addr
-        if looker_id and Looker.query.filter_by(id=int(looker_id)).first():
-            # 如果session中的looker_id有且存在
-            Looker.query.filter_by(id=int(looker_id)).update({'ip': f"{ip}"})
+        if looker_name and Looker.query.filter_by(looker_name=looker_name).first():
+            # 如果session中的looker_id有且存在,更新ip
+            Looker.query.filter_by(looker_name=looker_name).update({'ip': f"{ip}"})
             db.session.commit()
-            author = Looker.query.filter_by(id=int(looker_id)).first()
+            author = Looker.query.filter_by(looker_name=looker_name).first()
         else:
-            # TODO:这里我的实现有点傻逼了,不知道那位大佬有更好的方法.
-            looker_raw = Looker(ip=ip).new_looker()  # 生成游客对象
-            # print(looker_raw.id)
-            # 以新生成的游客对象id字段更新looker_name
-            Looker.query.filter_by(id=int(looker_raw.id)).update({'looker_name': f"游客{looker_raw.id}"})
-            session['looker_id'] = looker_raw.id  # session保存游客id
-            db.session.commit()  # 提交更改
-            author = Looker.query.filter_by(id=int(looker_raw.id)).first()  # 读取该游客对象
+            # fix: 弃用id命名,改为随机命名法,只有评论过的游客才会保留
+            looker = Looker(ip=ip).new_looker()  # 生成游客对象但是没有提交
+            author = looker
 
     # 提交表单
     if form.validate_on_submit():
@@ -46,7 +41,8 @@ def msg_index():
         else:
             # 针对游客用户
             msg = Msg(body=form.body.data, looker=author)
-            db.session.add(msg)
+            db.session.add_all([msg, author])
+            session['looker_name'] = author.looker_name  # session保存游客name
             db.session.commit()
             return redirect(url_for('msg.msg_index'))
 

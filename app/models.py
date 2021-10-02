@@ -6,6 +6,9 @@ Date: 2021-09-25 01:23:11
 LastEditTime: 2021-09-25 01:39:28
 Description: 数据库模型文件
 """
+import random
+import string
+
 from . import db
 from flask_login import UserMixin
 from . import login_manager
@@ -81,9 +84,10 @@ class Looker(db.Model):
     msgs = db.relationship('Msg', backref='looker')
 
     def new_looker(self):
-        """新建一个用户对象并返回"""
-        db.session.add(self)
-        db.session.commit()
+        """新建一个随机名称的用户对象并返回"""
+        str_list = [random.choice(string.digits + string.ascii_letters) for i in range(5)]
+        random_str = ''.join(str_list)
+        self.looker_name = f"游客{random_str}"
         return self
 
 
