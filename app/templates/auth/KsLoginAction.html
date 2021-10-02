@@ -116,8 +116,15 @@
                                 <tr>
                                     <td height="173" align="center">
                                         <!--放登录框的内容-->
+                                        {% if current_user.is_authenticated %}
+                                            <button type="button" class="btn btn-link"
+                                                    onclick="window.location.href='{{ url_for('auth.login_index') }}'">
+                                                当前已登录{{ current_user.username }}点此进入!
+                                            </button>
+                                        {% endif %}
+
                                         {% for msg in get_flashed_messages() %}
-                                            <p>{{ msg }}</p>
+                                            <p class="text-danger">{{ msg }}</p>
                                         {% endfor %}
 
                                         {#显示表单错误#}

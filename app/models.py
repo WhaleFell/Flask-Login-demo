@@ -54,7 +54,8 @@ class Msg(db.Model):
     body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     # 一个用户对应多条留言(一对多关系)[多的一端]
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # 游客允许空数值
+    looker_id = db.Column(db.Integer, db.ForeignKey('lookers.id'), nullable=True)
 
     @staticmethod
     def on_changer_body(target, value, oldvalue, init):
@@ -65,6 +66,25 @@ class Msg(db.Model):
         """
         if not value == oldvalue:
             target.body_html = markdown(value, output_format='html')
+
+
+class Looker(db.Model):
+    """游客表"""
+    __tablename__ = 'lookers'
+    id = db.Column(db.Integer, primary_key=True)  # 主键
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)  # 生成时间
+    looker_name = db.Column(db.String(64), unique=True)  # 游客名
+    ip = db.Column(db.String(64))  # 游客ip地址
+    # 一的那端,一个游客对应多条评论;
+    # 第一个参数:关系另一端的模型
+    # backref:向Msg模型添加一个looker属性,通过Msg.looker就可以获取到对应的单个Looker模型对象
+    msgs = db.relationship('Msg', backref='looker')
+
+    def new_looker(self):
+        """新建一个用户对象并返回"""
+        db.session.add(self)
+        db.session.commit()
+        return self
 
 
 # 数据库监听,一旦Msg.body被修改就调用转换方法

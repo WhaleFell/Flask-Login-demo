@@ -8,6 +8,7 @@ Description: Flask 项目配置文件
 """
 import os
 import platform
+from datetime import timedelta
 
 basedir = os.path.abspath(os.path.dirname(__file__))  # 项目的绝对目录
 
@@ -16,6 +17,7 @@ class Config(object):
     """主配置类"""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'lovehyy123456hjl'  # 密钥
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # 数据库
+    PERMANENT_SESSION_LIFETIME = timedelta(days=7)  # 设置 session 的过期时间.
 
     @staticmethod
     def init_app(app):

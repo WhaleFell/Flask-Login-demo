@@ -90,7 +90,7 @@
                                         <!--放登录框的内容-->
                                         {#                                        显示快闪信息#}
                                         {% for msg in get_flashed_messages() %}
-                                            <p>{{ msg }}</p>
+                                            <p class="text-danger">{{ msg }}</p>
                                         {% endfor %}
 
                                         {#显示表单错误#}
