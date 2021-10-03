@@ -11,7 +11,7 @@ from app.models import User
 from flask_migrate import Migrate
 import os
 
-app = create_app(os.environ.get('CONFIG', 'DevelopmentConfig'))
+app = create_app('TencentConfig')
 migrate = Migrate(app, db)
 
 if __name__ == '__main__':
