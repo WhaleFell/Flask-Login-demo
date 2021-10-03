@@ -1,5 +1,5 @@
 #!/bin/bash
 export FLASK_APP=app.py
 export CONFIG=TencentConfig
-pip3 install -t . -r requirements_Tencent.txt
+pip3 install -t . -r requirements.txt
 /var/lang/python3/bin/python3 app.py
