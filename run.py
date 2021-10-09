@@ -15,7 +15,8 @@ from app.models import User
 from flask_migrate import Migrate
 
 app = create_app(os.environ.get('FLASK_CONFIG') or 'Development')
-migrate = Migrate(app, db)
+# 设置数据库批处理使其支持sqlite
+migrate = Migrate(app, db, render_as_batch=True)
 
 
 @app.shell_context_processor
