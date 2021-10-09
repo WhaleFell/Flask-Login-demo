@@ -9,6 +9,7 @@ Description: Flask 项目配置文件
 import os
 import platform
 from datetime import timedelta
+from pathlib import Path
 
 basedir = os.path.abspath(os.path.dirname(__file__))  # 项目的绝对目录
 
@@ -22,7 +23,7 @@ class Config(object):
     @staticmethod
     def init_app(app):
         """静态方法,用于其他组件初始化"""
-        pass
+        Path.mkdir(Path(basedir, 'db'), exist_ok=True)  # 新建数据库文件夹
 
 
 class DevelopmentConfig(Config):
@@ -46,6 +47,6 @@ class TencentConfig(Config):
 
 # 开发环境选择字典
 config = {
-    "Development": DevelopmentConfig(),
-    "Tencent": TencentConfig()
+    "Development": DevelopmentConfig,
+    "Tencent": TencentConfig
 }

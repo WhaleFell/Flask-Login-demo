@@ -21,7 +21,9 @@ moment = Moment()
 
 
 def create_app(config_name):
-    """工厂函数,指定一个配置类型"""
+    """工厂函数,指定一个配置类型
+    程序入口文件千万不能和 `app` 重名,惨痛教训!!
+    """
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)  # 调用静态方法初始化组件
