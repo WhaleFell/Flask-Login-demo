@@ -47,6 +47,6 @@ class TencentConfig(Config):
 
 # 开发环境选择字典
 config = {
-    "Development": DevelopmentConfig,
-    "Tencent": TencentConfig
+    "development": DevelopmentConfig,
+    "tencent": TencentConfig
 }

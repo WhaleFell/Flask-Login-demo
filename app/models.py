@@ -9,6 +9,8 @@ Description: 数据库模型文件
 import random
 import string
 
+import pytz
+
 from . import db
 from flask_login import UserMixin
 from . import login_manager
@@ -93,3 +95,27 @@ class Looker(db.Model):
 
 # 数据库监听,一旦Msg.body被修改就调用转换方法
 db.event.listen(Msg.body, 'set', Msg.on_changer_body)
+
+
+def get_beijing_time():
+    """获取北京时间"""
+    tz = pytz.timezone('Asia/Shanghai')
+    return datetime.now(tz=tz)
+
+
+class Data(db.Model):
+    """上传数据类"""
+    __tablename__ = 'datas'
+
+    timestamp = db.Column(db.DateTime, default=get_beijing_time, index=True, primary_key=True)  # 自动获取时间主键
+    temp = db.Column(db.Float, nullable=True)  # 温度
+    humidity = db.Column(db.Float, nullable=True)  # 湿度
+
+    def to_dict(self) -> dict:
+        """处理Data数据类型"""
+        data_dict = {
+            'time': self.timestamp.strftime("%m/%d %H:%M"),
+            'temp': self.temp,
+            'humidity': self.humidity
+        }
+        return data_dict

@@ -1,81 +1,252 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>第一个 ECharts 实例</title>
-    <script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
-    <!-- 引入 echarts.js -->
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
     <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
-</head>
-<body>
-<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-<div id="main" style="width: 600px;height:400px;"></div>
-<script type="text/javascript">
-    var base = +new Date(2014, 9, 3);
-    var oneDay = 24 * 3600 * 1000;
-    var date = [];
+{% endblock %}
+{% block title %}树莓派温度上报{% endblock %}
+{% block body %}
+    <body>
+    <div class="container">
 
-    var data = [Math.random() * 150];
-    var now = new Date(base);
+        <p class="text-center"
+           style="font-size: 50px;color: #3A7734;background-color: #9C1A1C">
+            树莓派温度上报
+        </p>
 
-    function addData(shift) {
-        now = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/');
-        date.push(now);
-        data.push((Math.random() - 0.4) * 10 + data[data.length - 1]);
+        <div id="main" style="width: 100%;height:400px;"></div>
+        <div id="main2" style="width: 100%;height:400px;"></div>
+    </div>
+    </body>
+{% endblock %}
+{% block script %}
+    <script>
+        //定义两张图表
+        var myChart = echarts.init(document.getElementById('main'));
+        var myChart2 = echarts.init(document.getElementById('main2'));
 
-        if (shift) {
-            // 将第一个元素删除.
-            date.shift();
-            data.shift();
+        // 显示标题，图例和空的坐标轴
+        function fetchData(cb) {
+            cb();
         }
 
-        now = new Date(+new Date(now) + oneDay);
-    }
-
-    for (var i = 1; i < 100; i++) {
-        addData();
-    }
-
-    option = {
-        xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: date
-        },
-        yAxis: {
-            boundaryGap: [0, '50%'],
-            type: 'value'
-        },
-        series: [
-            {
-                name: '成交',
-                type: 'line',
-                smooth: true,
-                symbol: 'none',
-                stack: 'a',
-                areaStyle: {
-                    normal: {}
-                },
-                data: data
-            }
-        ]
-    };
-
-    setInterval(function () {
-        addData(true);
-        myChart.setOption({
+        // 初始 option
+        option = {
+            title: {
+                text: '温度数据'
+            },
+            tooltip: {},
+            legend: {
+                data: ['摄氏度']
+            },
+            //x轴
             xAxis: {
-                data: date
+                name: "时刻",
+                data: []
+            },
+            //y轴没有显式设置，根据值自动生成y轴
+            yAxis: {
+                name: "℃"
+            },
+            dataZoom: [
+                {   // 这个dataZoom组件，默认控制x轴。
+                    type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
+                    start: 0,      // 左边在 10% 的位置。
+                    end: 100         // 右边在 60% 的位置。
+                },
+                {   // 这个dataZoom组件，也控制x轴。
+                    type: 'inside', // 这个 dataZoom 组件是 inside 型 dataZoom 组件
+                    start: 0,      // 左边在 10% 的位置。
+                    end: 100         // 右边在 60% 的位置。
+                }
+            ],
+            //工具箱
+            //保存图片
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {
+                        show: true
+                    }
+                }
+            },
+            //图例-每一条数据的名字叫销量
+            legend: {
+                data: ['摄氏度']
             },
             series: [{
-                name: '成交',
-                data: data
-            }]
-        });
-    }, 500);
+                name: '摄氏度',
+                type: 'line',
+                data: [],
+                // 设置填充底部
+                areaStyle: {
+                    normal: {
+                        color: '#80ffc0',
+                        label: {show: true}
+                    }
+                },
+                label: {
+                    show: true,
+                    color: '#1026ec',
+                },
+                smooth: true,
+            }],
+        };
+        myChart.showLoading(); // 加载
+        myChart.setOption(option); // 设置图
+        fetchData(function (data) {
+            $.ajax({
+                url: "/getdata",
+                type: "GET",
+                dataType: "json",
+                success: function (result) {
+                    console.log(result);
+                    if (result.code == 200) {
+                        myChart.setOption({
+                            xAxis: {
+                                data: result.data.times
+                            },
+                            series: [{
+                                // 根据名字对应到相应的系列
+                                name: '温度',
+                                data: result.data.temps
+                            }]
+                        });
+                        myChart.hideLoading();
 
-    // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main'));
-    myChart.setOption(option)
-</script>
-</body>
+                    } else {
+                        myChart.hideLoading();
+                    }
+
+                },
+            })
+
+
+        });
+
+
+        // 显示标题，图例和空的坐标轴
+        function fetchData(cb) {
+            cb();
+        }
+
+        // 初始 option
+        option2 = {
+            title: {
+                text: '湿度数据'
+            },
+            tooltip: {},
+            legend: {
+                data: ['百分比']
+            },
+            //x轴
+            xAxis: {
+                name: "时刻",
+                data: []
+            },
+            //y轴没有显式设置，根据值自动生成y轴
+            yAxis: {
+                name: "℃"
+            },
+            dataZoom: [
+                {   // 这个dataZoom组件，默认控制x轴。
+                    type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
+                    start: 0,      // 左边在 10% 的位置。
+                    end: 100         // 右边在 60% 的位置。
+                },
+                {   // 这个dataZoom组件，也控制x轴。
+                    type: 'inside', // 这个 dataZoom 组件是 inside 型 dataZoom 组件
+                    start: 0,      // 左边在 10% 的位置。
+                    end: 100         // 右边在 60% 的位置。
+                }
+            ],
+            //工具箱
+            //保存图片
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {
+                        show: true
+                    }
+                }
+            },
+            //图例-每一条数据的名字叫销量
+            legend: {
+                data: ['湿度']
+            },
+            series: [{
+                name: '湿度',
+                type: 'line',
+                data: [],
+                // 设置填充底部
+                areaStyle: {
+                    normal: {
+                        color: '#80ffc0',
+                        label: {show: true}
+                    }
+                },
+                label: {
+                    show: true,
+                    color: '#1026ec',
+                },
+                smooth: true,
+            }],
+        };
+        myChart2.showLoading(); // 加载
+        myChart2.setOption(option2); // 设置图
+        fetchData(function (data) {
+            $.ajax({
+                url: "/getdata",
+                type: "GET",
+                dataType: "json",
+                success: function (result) {
+                    console.log(result);
+                    if (result.code == 200) {
+                        myChart2.setOption({
+                            xAxis: {
+                                data: result.data.times
+                            },
+                            series: [{
+                                // 根据名字对应到相应的系列
+                                name: '温度',
+                                data: result.data.humiditys
+                            }]
+                        });
+                        myChart2.hideLoading();
+
+                    } else {
+                        myChart2.hideLoading();
+                    }
+
+                },
+            })
+
+
+        });
+
+    </script>
+{% endblock %}
+{% block css %}
+    <style>
+        {{ super() }}
+        .container {
+            opacity: 0.85;
+        }
+
+        {#        自适应背景#}
+        {#body {#}
+        {#    margin: 0;#}
+        {#    padding: 0;#}
+        {#    font-family: sans-serif;#}
+        {#    background: url(/static/image/bg.jpeg) no-repeat center 0px;#}
+        {#    background-size: cover;#}
+        {##}
+        {#    background-position: center 0;#}
+        {#    background-repeat: no-repeat;#}
+        {#    background-attachment: fixed;#}
+        {#    -webkit-background-size: cover;#}
+        {#    -o-background-size: cover;#}
+        {#    -moz-background-size: cover;#}
+        {#    -ms-background-size: cover;#}
+        {#}#}
+    </style>
+{% endblock %}

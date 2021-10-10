@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
 {% block title %}落落留言板{% endblock %}
 {% import '_macros.html' as macros %}
 {% block body %}
     {{ super() }}
+    <body>
     <div class="bg"></div>
     <div class="container">
         <p class="text-center"
@@ -100,10 +104,10 @@
 
     </div>
 
-
+    </body>
 {% endblock %}
-<style>
-    {% block css %}
+{% block css %}
+    <style>
         {#        自适应背景#}
         body {
             margin: 0;
@@ -121,12 +125,15 @@
             -moz-background-size: cover;
             -ms-background-size: cover;
         }
+
         .container {
             opacity: 0.7;
         }
+
         .flask-pagedown-preview {
             opacity: 1;
             background-color: #7e8fad;
         }
-    {% endblock %}
-</style>
+    </style>
+{% endblock %}
+
