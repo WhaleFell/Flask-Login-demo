@@ -44,7 +44,7 @@ def create_app(config_name):
     from .msg import msg
     app.register_blueprint(msg)
 
-    from .info import info
-    app.register_blueprint(info)
+    from .rpi import rpi
+    app.register_blueprint(rpi)
 
     return app

@@ -1,15 +1,24 @@
-from flask import render_template, request, make_response
-from . import info
+from flask import render_template, request, make_response, current_app
+from pathlib import Path
+from . import rpi
 from ..models import Data, db
 from ..utils import parse_resp, BaseResp
 
 
-@info.route('/info/', methods=['GET', 'POST'])
+@rpi.route('/rpi/', methods=['GET', 'POST'])
 def index():
-    return render_template('info/index.html')
+    return render_template('rpi/index.html')
 
 
-@info.route('/ping/', methods=['POST', 'GET'])
+@rpi.route('/rpi/pics', methods=['GET', 'POST'])
+def pics():
+    photos_path = Path(current_app.config['BASEDIR'], 'app/static/photos')
+    photos = [x.name for x in photos_path.iterdir()]
+    photos.sort(reverse=True)
+    return render_template('rpi/pics.html', pics=photos)
+
+
+@rpi.route('/rpi/ping/', methods=['POST', 'GET'])
 def ping():
     """提交温湿度数据接口,写入数据库
     methods:POST
@@ -36,7 +45,7 @@ def ping():
                     data=f"温度:{data.temp} 湿度:{data.humidity} 时间:{data.timestamp}").parse_resp()
 
 
-@info.route('/getdata/', methods=['GET', 'POST'])
+@rpi.route('/rpi/getdata/', methods=['GET', 'POST'])
 def get_data():
     """获取温湿度数据的接口"""
     datas = Data.query.order_by(Data.timestamp).all()
@@ -56,9 +65,36 @@ def get_data():
     return BaseResp(msg="获取全部数据成功！", data={'times': times, 'temps': temps, 'humiditys': humiditys}).parse_resp()
 
 
-@info.route('/remove_all/', methods=['GET', 'POST'])
+@rpi.route('/rpi/remove_all/', methods=['GET', 'POST'])
 def remove_all():
     """清空数据表"""
     db.session.execute('delete from datas;')
     db.session.commit()
     return BaseResp(msg="清空表数据成功!").parse_resp()
+
+
+@rpi.route('/rpi/upload_photo/', methods=['POST', 'GET'])
+def upload_photo():
+    """上传图片并保存在 /static/photos 目录
+    支持滚动保存
+    """
+    photos_path = Path(current_app.config['BASEDIR'], 'app/static/photos')
+    # 列出目录下的文件
+    photos = [str(x) for x in photos_path.iterdir()]
+    photos.sort(reverse=True)
+    while True:
+        if len(photos) >= 6:
+            # 当有5张图片时删除最旧的
+            rm_file = photos[-1]
+            Path(rm_file).unlink()
+            photos.remove(rm_file)
+            print(f"删除文件{rm_file}成功")
+        else:
+            break
+    if request.method == 'POST':
+        img = request.files['image']
+        if img:
+            img.save(Path(photos_path, img.filename))
+            return BaseResp(msg=f"{img.filename}文件上传成功!", data=photos).parse_resp()
+
+    return BaseResp(code=500, msg="文件上传失败,在img字段上传.", data=photos).parse_resp()

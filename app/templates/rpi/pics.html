@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block title %}树莓派图片上报预览{% endblock %}
+{% block body %}
+    <body>
+    <p class="text-center"
+       style="font-size: 50px;color: #3A7734;background-color: #9C1A1C">
+        树莓派图片预览
+    </p>
+
+    {% for pic in pics %}
+        <div class="col-xs-6 col-sm-3">
+            <img src="{{ url_for('static',filename='photos/'+pic) }}" class="img-responsive" alt="Cinque Terre">
+
+        </div>
+    {% endfor %}
+
+
+    </body>
+{% endblock %}

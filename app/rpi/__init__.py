@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-info = Blueprint('info', __name__)
+rpi = Blueprint('rpi', __name__)
 
 from . import views
 
