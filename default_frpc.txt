@@ -1,0 +1,17 @@
+[common]
+server_addr = ts.qiny.top
+server_port = 7000
+token = 531208640
+user = whalefall
+login_fail_exit = false
+protocol = tcp
+tcp_mux = true
+dns_server = 114.114.114.114
+
+[server_name]
+type = tcp
+local_ip = 127.0.0.1
+local_port = 5000
+remote_port = 48881
+use_encryption = true
+use_compression = true

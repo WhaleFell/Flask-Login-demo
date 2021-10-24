@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block body %}
+    <body>
+    <div class="container">
+        <div class="page-header">
+            <h1>在线编辑FRPC配置
+                <small>蓝鲸</small>
+            </h1>
+        </div>
+        <div class="alert alert-info alert-dismissable">
+            <strong class="h4">注意: FRPC配置格式示例</strong>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion"
+                           href="#collapseTwo">
+                            点击展开
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <pre class="pre-scrollable" id="default_frpc">
+[common]
+server_addr = ts.qiny.top
+server_port = 7000
+token = 531208640
+user = whalefall
+login_fail_exit = false
+protocol = tcp
+tcp_mux = true
+dns_server = 114.114.114.114
+
+[Python-API]
+type = tcp
+local_ip = 127.0.0.1
+local_port = 5000
+remote_port = 48881
+use_encryption = true
+use_compression = true
+            </pre>
+
+                    </div>
+                </div>
+                <button class="btn btn-info" data-clipboard-action="cut" data-clipboard-target="#default_frpc">
+                    复制到剪贴板
+                </button>
+            </div>
+
+        </div>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            {{ form.body.label(class="text-success h4") }}
+            {{ form.body(class='form-control',style="width: 100%;height: 200px",rows="2",cols="20") }}
+            <br/>
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+        <div class="alert alert-success">
+            <strong class="h4">当前服务器配置</strong>
+            <pre id="frpc_ini" class="pre-scrollable">
+
+            </pre>
+            <button class="btn" data-clipboard-target="#frpc_ini">
+                复制到剪贴板
+            </button>
+        </div>
+
+    </div>
+    </body>
+{% endblock %}
+{% block script %}
+    <script>
+        $("#frpc_ini").load("{{ url_for('rpi.get_frpc') }}");
+    </script>
+{% endblock %}

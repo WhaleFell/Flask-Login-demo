@@ -1,5 +1,8 @@
-from flask import render_template, request, make_response, current_app
+import traceback
+
+from flask import render_template, request, make_response, current_app,redirect,url_for
 from pathlib import Path
+from .forms import IniForm
 from . import rpi
 from ..models import Data, db
 from ..utils import parse_resp, BaseResp
@@ -10,7 +13,12 @@ def index():
     return render_template('rpi/index.html')
 
 
-@rpi.route('/rpi/pics', methods=['GET', 'POST'])
+@rpi.route('/rpi/temp/', methods=['GET', 'POST'])
+def temp():
+    return render_template('rpi/temp.html')
+
+
+@rpi.route('/rpi/pics/', methods=['GET', 'POST'])
 def pics():
     photos_path = Path(current_app.config['BASEDIR'], 'app/static/photos')
     photos = [x.name for x in photos_path.iterdir()]
@@ -98,3 +106,30 @@ def upload_photo():
             return BaseResp(msg=f"{img.filename}文件上传成功!", data=photos).parse_resp()
 
     return BaseResp(code=500, msg="文件上传失败,在img字段上传.", data=photos).parse_resp()
+
+
+@rpi.route('/rpi/frp/', methods=['POST', 'GET'])
+def frp():
+    """
+    在线编辑树莓派 FRPC 配置,使得树莓派会自动获取其配置并更新.
+    """
+    form = IniForm()
+    config_path = Path(current_app.config['BASEDIR'], 'app/static/others/frpc.txt')
+    if form.validate_on_submit():
+        config_path.touch(exist_ok=True)
+        config_path.write_text(form.body.data, encoding="utf-8")
+        return redirect(url_for('rpi.frp'))
+
+    return render_template('rpi/editor_frp.html', form=form)
+
+
+@rpi.route('/rpi/get_frpc/', methods=['POST', 'GET'])
+def get_frpc():
+    """
+    获取 frpc 的接口
+    """
+    config_path = Path(current_app.config['BASEDIR'], 'app/static/others/frpc.txt')
+    if not config_path.is_file():
+        with open(str(config_path), "w", encoding='utf-8') as c:
+            c.write(current_app.config['FRPC_TEMPLATES'])
+    return config_path.read_text(encoding='utf-8')

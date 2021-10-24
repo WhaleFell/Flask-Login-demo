@@ -1,256 +1,79 @@
 {% extends "base.html" %}
-{% block head %}
-    {{ super() }}
-    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
-{% endblock %}
-{% block title %}树莓派温度上报{% endblock %}
 {% block body %}
     <body>
-    <p class="text-center"
-       style="font-size: 50px;color: #3A7734;background-color: #9C1A1C">
-        树莓派温度上报
-    </p>
+    <div class="container">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h2 class="text-center">
+                    <img id="head-img" style="display: none;" src="https://q1.qlogo.cn/g?b=qq&nk=2734184475&s=640"
+                         class="img-circle" alt="Cinque Terre" width="50" height="50">树莓派服务
+                </h2>
+            </div>
 
-    <div id="main" style="width: 100%;height:400px;"></div>
-    <div id="main2" style="width: 100%;height:400px;"></div>
+            <div class="panel-body">
+                <ul class="list-group text-center" style="font-size: 20px;">
+                    <li class="list-group-item">
+                        <a href="{{ url_for('rpi.temp') }}">
+                            <span class="text-primary">树莓派温度上报</span>
+                            <button type="button" class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-share">跳转到</span>
+                            </button>
+                        </a>
+                    </li>
 
+                    <li class="list-group-item">
+                        <a href="{{ url_for('rpi.pics') }}">
+                            <span class="text-primary">树莓派图片预览</span>
+                            <button type="button" class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-share">跳转到</span>
+                            </button>
+                        </a>
+                    </li>
+
+                    <li class="list-group-item">
+                        <a href="{{ url_for('rpi.frp') }}">
+                            <span class="text-primary">树莓派Frpc编辑</span>
+                            <button type="button" class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-share">跳转到</span>
+                            </button>
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
     </div>
-    </nav>
-
-
     </body>
 {% endblock %}
 {% block script %}
     <script>
-        //定义两张图表
-        var myChart = echarts.init(document.getElementById('main'));
-        var myChart2 = echarts.init(document.getElementById('main2'));
-
-        // 显示标题，图例和空的坐标轴
-        function fetchData(cb) {
-            cb();
-        }
-
-        // 初始 option
-        option = {
-            title: {
-                text: '温度数据'
-            },
-            tooltip: {},
-            legend: {
-                data: ['摄氏度']
-            },
-            //x轴
-            xAxis: {
-                name: "时刻",
-                data: []
-            },
-            //y轴没有显式设置，根据值自动生成y轴
-            yAxis: {
-                name: "℃"
-            },
-            dataZoom: [
-                {   // 这个dataZoom组件，默认控制x轴。
-                    type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
-                    start: 0,      // 左边在 10% 的位置。
-                    end: 100         // 右边在 60% 的位置。
-                },
-                {   // 这个dataZoom组件，也控制x轴。
-                    type: 'inside', // 这个 dataZoom 组件是 inside 型 dataZoom 组件
-                    start: 0,      // 左边在 10% 的位置。
-                    end: 100         // 右边在 60% 的位置。
-                }
-            ],
-            //工具箱
-            //保存图片
-            toolbox: {
-                show: true,
-                feature: {
-                    saveAsImage: {
-                        show: true
-                    }
-                }
-            },
-            //图例-每一条数据的名字叫销量
-            legend: {
-                data: ['摄氏度']
-            },
-            series: [{
-                name: '摄氏度',
-                type: 'line',
-                data: [],
-                // 设置填充底部
-                areaStyle: {
-                    normal: {
-                        color: '#80ffc0',
-                        label: {show: true}
-                    }
-                },
-                label: {
-                    show: true,
-                    color: '#1026ec',
-                },
-                smooth: true,
-            }],
-        };
-        myChart.showLoading(); // 加载
-        myChart.setOption(option); // 设置图
-        fetchData(function (data) {
-            $.ajax({
-                url: "getdata",
-                type: "GET",
-                dataType: "json",
-                success: function (result) {
-                    console.log(result);
-                    if (result.code == 200) {
-                        myChart.setOption({
-                            xAxis: {
-                                data: result.data.times
-                            },
-                            series: [{
-                                // 根据名字对应到相应的系列
-                                name: '温度',
-                                data: result.data.temps
-                            }]
-                        });
-                        myChart.hideLoading();
-
-                    } else {
-                        myChart.hideLoading();
-                    }
-
-                },
-            })
-
-
+        $(document).ready(function () {
+            $('#head-img').show(1000);
         });
-
-
-        // 显示标题，图例和空的坐标轴
-        function fetchData(cb) {
-            cb();
-        }
-
-        // 初始 option
-        option2 = {
-            title: {
-                text: '湿度数据'
-            },
-            tooltip: {},
-            legend: {
-                data: ['百分比']
-            },
-            //x轴
-            xAxis: {
-                name: "时刻",
-                data: []
-            },
-            //y轴没有显式设置，根据值自动生成y轴
-            yAxis: {
-                name: "℃"
-            },
-            dataZoom: [
-                {   // 这个dataZoom组件，默认控制x轴。
-                    type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
-                    start: 0,      // 左边在 10% 的位置。
-                    end: 100         // 右边在 60% 的位置。
-                },
-                {   // 这个dataZoom组件，也控制x轴。
-                    type: 'inside', // 这个 dataZoom 组件是 inside 型 dataZoom 组件
-                    start: 0,      // 左边在 10% 的位置。
-                    end: 100         // 右边在 60% 的位置。
-                }
-            ],
-            //工具箱
-            //保存图片
-            toolbox: {
-                show: true,
-                feature: {
-                    saveAsImage: {
-                        show: true
-                    }
-                }
-            },
-            //图例-每一条数据的名字叫销量
-            legend: {
-                data: ['湿度']
-            },
-            series: [{
-                name: '湿度',
-                type: 'line',
-                data: [],
-                // 设置填充底部
-                areaStyle: {
-                    normal: {
-                        color: '#80ffc0',
-                        label: {show: true}
-                    }
-                },
-                label: {
-                    show: true,
-                    color: '#1026ec',
-                },
-                smooth: true,
-            }],
-        };
-        myChart2.showLoading(); // 加载
-        myChart2.setOption(option2); // 设置图
-        fetchData(function (data) {
-            $.ajax({
-                url: "getdata",
-                type: "GET",
-                dataType: "json",
-                success: function (result) {
-                    console.log(result);
-                    if (result.code == 200) {
-                        myChart2.setOption({
-                            xAxis: {
-                                data: result.data.times
-                            },
-                            series: [{
-                                // 根据名字对应到相应的系列
-                                name: '温度',
-                                data: result.data.humiditys
-                            }]
-                        });
-                        myChart2.hideLoading();
-
-                    } else {
-                        myChart2.hideLoading();
-                    }
-
-                },
-            })
-
-
-        });
-
     </script>
 {% endblock %}
 {% block css %}
     <style>
-        {{ super() }}
-        {#.container {#}
-        {#    opacity: 0.85;#}
-        {
-        #}#}
-
         {#        自适应背景#}
-        {#body {#}
-        {#    margin: 0;#}
-        {#    padding: 0;#}
-        {#    font-family: sans-serif;#}
-        {#    background: url(/static/image/bg.jpeg) no-repeat center 0px;#}
-        {#    background-size: cover;#}
-        {##}
-        {#    background-position: center 0;#}
-        {#    background-repeat: no-repeat;#}
-        {#    background-attachment: fixed;#}
-        {#    -webkit-background-size: cover;#}
-        {#    -o-background-size: cover;#}
-        {#    -moz-background-size: cover;#}
-        {#    -ms-background-size: cover;#}
-        {
-        #}#}
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            background: url(/static/image/bg.jpeg) no-repeat center 0px;
+            background-size: cover;
+
+
+            background-position: center 0;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            -webkit-background-size: cover;
+            -o-background-size: cover;
+            -moz-background-size: cover;
+            -ms-background-size: cover;
+        }
+
+        .container {
+            opacity: 0.8;
+        }
     </style>
 {% endblock %}
